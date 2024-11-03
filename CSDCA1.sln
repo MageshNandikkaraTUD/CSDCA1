@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BPCalculator", "BPCalculator\BPCalculator.csproj", "{A1D9488D-3D46-4FD1-AA45-CB9981B3A99F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BPUnitTestProject", "BPUnitTestProject\BPUnitTestProject.csproj", "{813559D2-494F-4494-BAA6-AE08075BADC1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A1D9488D-3D46-4FD1-AA45-CB9981B3A99F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1D9488D-3D46-4FD1-AA45-CB9981B3A99F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1D9488D-3D46-4FD1-AA45-CB9981B3A99F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1D9488D-3D46-4FD1-AA45-CB9981B3A99F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{813559D2-494F-4494-BAA6-AE08075BADC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{813559D2-494F-4494-BAA6-AE08075BADC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{813559D2-494F-4494-BAA6-AE08075BADC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{813559D2-494F-4494-BAA6-AE08075BADC1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
