@@ -28,7 +28,7 @@ namespace BPUnitTestProject
         }
 
         [TestMethod]
-        public void TeUnitTestHigh()
+        public void UnitTestHigh()
         {
             BloodPressure BP = new() { Systolic = 170, Diastolic = 95 };
             Assert.AreEqual(BP.Category, BPCategory.High);
