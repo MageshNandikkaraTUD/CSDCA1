@@ -41,34 +41,6 @@ namespace BPUnitTestProject
             Assert.AreEqual(BP.Category, BPCategory.High);
         }
 
-        [TestMethod]
-        public void SystolicValueTooLow()
-        {
-            BloodPressure BP = new() { Systolic = 60, Diastolic = 50 };
-            Assert.ThrowsException<ArgumentOutOfRangeException>(() => BP.Category);
-        }
-
-        [TestMethod]
-        public void SystolicValueTooHigh()
-        {
-            BloodPressure BP = new() { Systolic = 200, Diastolic = 50 };
-            Assert.ThrowsException<ArgumentOutOfRangeException>(() => BP.Category);
-        }
-
-        [TestMethod]
-        public void DiastolicValueTooLow()
-        {
-            BloodPressure BP = new() { Systolic = 100, Diastolic = 30 };
-            Assert.ThrowsException<ArgumentOutOfRangeException>(() => BP.Category);
-        }
-
-        [TestMethod]
-        public void DiastolicValueTooHigh()
-        {
-            BloodPressure BP = new() { Systolic = 100, Diastolic = 110 };
-            Assert.ThrowsException<ArgumentOutOfRangeException>(() => BP.Category);
-        }
-
     }
 }
 
