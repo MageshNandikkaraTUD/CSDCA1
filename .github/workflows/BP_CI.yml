@@ -33,7 +33,7 @@ jobs:
         uses: dependency-check/Dependency-Check_Action@main
         id: Depcheck
         with:
-          project: 'BMI'
+          project: 'BPCalculator'
           path: '.'
           format: 'HTML'    
           args: >
