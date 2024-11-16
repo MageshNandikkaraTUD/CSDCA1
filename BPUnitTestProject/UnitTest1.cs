@@ -41,6 +41,40 @@ namespace BPUnitTestProject
             Assert.AreEqual(BP.Category, BPCategory.High);
         }
 
+        [TestMethod]
+        public void EdgeCaseSystolicMinDiastolicMin()
+        {
+            BloodPressure BP = new() { Systolic = BloodPressure.SystolicMin, Diastolic = BloodPressure.DiastolicMin };
+            Assert.AreEqual(BP.Category, BPCategory.Low);
+        }
+
+        [TestMethod]
+        public void EdgeCaseSystolicMaxDiastolicMin()
+        {
+            BloodPressure BP = new() { Systolic = BloodPressure.SystolicMax, Diastolic = BloodPressure.DiastolicMin };
+            Assert.AreEqual(BP.Category, BPCategory.High);
+        }
+
+        [TestMethod]
+        public void EdgeCaseSystolicMaxDiastolicMax()
+        {
+            BloodPressure BP = new() { Systolic = BloodPressure.SystolicMax, Diastolic = BloodPressure.DiastolicMax };
+            Assert.AreEqual(BP.Category, BPCategory.High);
+        }
+
+        [TestMethod]
+        public void EdgeCaseSystolicMinDiastolicMinPlusOne()
+        {
+            BloodPressure BP = new() { Systolic = BloodPressure.SystolicMin, Diastolic = BloodPressure.DiastolicMin + 1 };
+            Assert.AreEqual(BP.Category, BPCategory.Low);
+        }
+
+        [TestMethod]
+        public void Category_EdgeCase_SystolicMaxMinusOne_DiastolicMax()
+        {
+            BloodPressure BP = new() { Systolic = BloodPressure.SystolicMax - 1, Diastolic = BloodPressure.DiastolicMax };
+            Assert.AreEqual(BP.Category, BPCategory.High);
+        }
     }
 }
 
