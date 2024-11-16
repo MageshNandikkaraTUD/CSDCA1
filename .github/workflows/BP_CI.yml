@@ -37,7 +37,7 @@ jobs:
           path: '.'
           format: 'HTML'    
           args: >
-            --failOnCVSS 3            
+            --failOnCVSS 8            
           # fail if CVSS score is High >=8          
       - name: Upload Test results
         uses: actions/upload-artifact@v4
