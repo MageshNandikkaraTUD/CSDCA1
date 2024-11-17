@@ -58,8 +58,6 @@ jobs:
            name: Depcheck report
            path: ${{github.workspace}}/reports
 
-
-
   sonarcloud:
     runs-on: ubuntu-latest
     steps:
@@ -70,4 +68,3 @@ jobs:
         uses: SonarSource/sonarcloud-github-action@v2.1.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
