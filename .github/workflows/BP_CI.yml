@@ -70,5 +70,7 @@ jobs:
           args: >
             -Dsonar.organization=mnandikkara
             -Dsonar.projectKey=mnandikkara_bpcalculator
+            -Dsonar.cs.opencover.reportsPaths=coverage.cobertura.xml
+            -Dsonar.python.coverage.reportPaths=coverage.cobertura.xml
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
