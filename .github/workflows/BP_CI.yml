@@ -5,17 +5,24 @@ on:
 #   branches: [ master ]
 jobs:
   build:                                            
-    runs-on: ubuntu-latest                        
+    runs-on: ubuntu-latest
+    name: CI Build      
+
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout  
+      uses: actions/checkout@v4
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+
     - name: Build for Release
-      run: dotnet build --configuration Release      
+      run: dotnet build --configuration Release --no-restore
+
     - name: Run unit tests
-      run: dotnet test BPUnitTestProject/BPUnitTestProject.csproj --no-restore --collect "Code coverage" -l:trx
+      run: dotnet test BPUnitTestProject/BPUnitTestProject.csproj --configuration Release --no-build --settings tests.runsettings --collect "Code coverage" -l:trx
+
     - name: Publish Unit Test Results
       uses: dorny/test-reporter@v1
       with:
@@ -23,19 +30,17 @@ jobs:
         name: MS Tests                  
         path: '**.trx'
         reporter: 'dotnet-trx'
-    - name: Run tests with coverage
-      run: dotnet test --no-build --collect:"XPlat Code Coverage"
-    - name: Upload coverage report
-      uses: actions/upload-artifact@v4
-      with:
-        name: code-coverage
-        path: '**/coverage.cobertura.xml'
-    - name: Code Coverage Summary
+        
+    - name: Publish Coverage
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:
-        filename: '**/coverage.cobertura.xml'
+        filename: '**/TestResults/**/coverage.cobertura.xml'
+        badge: true
+        fail_below_min: true
         format: markdown
+        indicators: true
         output: both
+        thresholds: '30 60'
         
   dependency_check:
     runs-on: ubuntu-latest
