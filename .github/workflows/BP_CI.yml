@@ -42,6 +42,12 @@ jobs:
         format: markdown
         indicators: true
         output: both
+
+    - name: ReportGenerator
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.4.1
+      with:
+        reports: cobertura.xml
+        targetdir: coveragereport
         
   dependency_check:
     runs-on: ubuntu-latest
