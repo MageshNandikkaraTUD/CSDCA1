@@ -48,7 +48,7 @@ jobs:
       with:
         reports: '**/TestResults/**/coverage.cobertura.xml'
         targetdir: coveragereport
-        filefilters: -.\**\Pages\**
+        classfilters: -BPCalculator.Pages.BloodPressureModel
 
     - name: Upload Coverage Report
       uses: actions/upload-artifact@v4
