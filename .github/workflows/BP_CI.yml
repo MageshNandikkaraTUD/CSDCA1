@@ -48,6 +48,12 @@ jobs:
       with:
         reports: '**/TestResults/**/coverage.cobertura.xml'
         targetdir: coveragereport
+
+    - name: Upload Coverage Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: Coverage report
+        path: ${{github.workspace}}/coveragereport
         
   dependency_check:
     runs-on: ubuntu-latest
