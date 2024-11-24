@@ -33,15 +33,6 @@ jobs:
         name: MS Tests                  
         path: '**.trx'
         reporter: 'dotnet-trx'
-        
-    - name: Publish Coverage
-      uses: irongut/CodeCoverageSummary@v1.3.0
-      with:
-        filename: '**/TestResults/**/coverage.cobertura.xml'
-        badge: true
-        format: markdown
-        indicators: true
-        output: both
 
     - name: ReportGenerator
       uses: danielpalme/ReportGenerator-GitHub-Action@5.4.1
@@ -55,6 +46,17 @@ jobs:
       with:
         name: Coverage report
         path: ${{github.workspace}}/coveragereport
+
+    - name: Publish Coverage
+      uses: irongut/CodeCoverageSummary@v1.3.0
+      with:
+        filename: ${{github.workspace}}/coveragereport/Cobertura.xml
+        badge: true
+        fail_below_min: true
+        format: markdown
+        indicators: true
+        output: both
+        thresholds: '30 60'
         
   dependency_check:
     runs-on: ubuntu-latest
