@@ -41,6 +41,9 @@ jobs:
         targetdir: coveragereport
         classfilters: -BPCalculator.Pages.BloodPressureModel;-BPCalculator.Pages.ErrorModel;-BPCalculator.Pages.Pages__ViewStart;-BPCalculator.Pages.Pages_Error;-BPCalculator.Pages.Pages_Index;-BPCalculator.Pages.Pages_Privacy;-BPCalculator.Pages.PrivacyModel;-BPCalculator.Program;-BPCalculator.Startup
 
+    - name: Run LS
+      run: echo ls ${{github.workspace}}/coveragereport
+
     - name: Publish Coverage
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:
@@ -52,8 +55,7 @@ jobs:
         output: both
         thresholds: '30 60'
 
-    - name: Run LS
-      run: ls ${{github.workspace}}/coveragereport
+    
 
     - name: Upload Coverage Report
       uses: actions/upload-artifact@v4
