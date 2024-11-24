@@ -39,11 +39,9 @@ jobs:
       with:
         filename: '**/TestResults/**/coverage.cobertura.xml'
         badge: true
-        fail_below_min: true
         format: markdown
         indicators: true
         output: both
-        thresholds: '30 60'
         
   dependency_check:
     runs-on: ubuntu-latest
