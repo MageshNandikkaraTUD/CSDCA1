@@ -41,28 +41,23 @@ jobs:
         targetdir: coveragereport
         classfilters: -BPCalculator.Pages.BloodPressureModel;-BPCalculator.Pages.ErrorModel;-BPCalculator.Pages.Pages__ViewStart;-BPCalculator.Pages.Pages_Error;-BPCalculator.Pages.Pages_Index;-BPCalculator.Pages.Pages_Privacy;-BPCalculator.Pages.PrivacyModel;-BPCalculator.Program;-BPCalculator.Startup
 
-    - name: Run LS
-      run: ls ${{github.workspace}}/coveragereport
-
-    - name: Publish Coverage
-      uses: irongut/CodeCoverageSummary@v1.3.0
-      with:
-        filename: '${{github.workspace}}/coveragereport/Cobertura.xml'
-        badge: true
-        fail_below_min: true
-        format: markdown
-        indicators: true
-        output: both
-        thresholds: '30 60'
-
-    
-
     - name: Upload Coverage Report
       uses: actions/upload-artifact@v4
       with:
         name: Coverage report
         path: ${{github.workspace}}/coveragereport
-        
+
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@v2.1.0
+      with:
+        projectBaseDir: .
+        args: >
+            -Dsonar.organization=mnandikkara
+            -Dsonar.projectKey=mnandikkara_bpcalculator
+      env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+       
   dependency_check:
     runs-on: ubuntu-latest
     steps:
@@ -84,19 +79,3 @@ jobs:
            name: Depcheck report
            path: ${{github.workspace}}/reports
 
-  sonarcloud:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2.1.0
-        with:
-          args: >
-            -Dsonar.organization=mnandikkara
-            -Dsonar.projectKey=mnandikkara_bpcalculator
-            -Dsonar.cs.opencover.reportsPaths=coverage.cobertura.xml
-            -Dsonar.python.coverage.reportPaths=coverage.cobertura.xml
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
