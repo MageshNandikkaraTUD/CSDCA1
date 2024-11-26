@@ -26,5 +26,22 @@ namespace BPCalculator.Pages
             }
             return Page();
         }
+
+        public string GetCatgoryColor(BPCategory category)
+        {
+            switch (category)
+            {
+                case BPCategory.Low:
+                    return "blueviolet";
+                case BPCategory.Ideal:
+                    return "green";
+                case BPCategory.PreHigh:
+                    return "greenyellow";
+                case BPCategory.High:
+                    return "red";
+                default:
+                    return "white";
+            }
+        }
     }
 }
