@@ -4,7 +4,7 @@ on:
 # push:                                            
 #   branches: [ master ]
 jobs:
-  build:                                            
+  Build_Unit_Test:                                            
     runs-on: ubuntu-latest
     name: CI Build      
 
@@ -46,6 +46,32 @@ jobs:
       with:
         name: Coverage report
         path: ${{github.workspace}}/coveragereport
+  
+  deploy_test_blue_green:                                             
+    name: Deploy to staging slot, run E2E tests, swap slots
+    needs: Build_Unit_Test
+    environment:
+      name: Staging
+      url: https://mn-bpcalculator-staging.azurewebsites.net/                                 
+    runs-on: windows-latest
+    env:
+      AZURE_WEBAPP_NAME: mn-bpicalculator               # set this to your application's name
+      AZURE_WEBAPP_PACKAGE_PATH: 'publish'              # set this to the path to your web app project
+    steps:
+    - uses: actions/checkout@v4
+
+    # publish web app ready for deployment
+    - name: Publish web app
+      run: dotnet publish -c Release -o ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp
+    
+    # Deploy to Azure app service to staging slot using publish profile for staging slot
+    - name: Run Azure webapp deploy action using publish profile credentials
+      uses: azure/webapps-deploy@v2
+      with: 
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}                            
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE  }}     # Define secret variable in environment
+        slot-name: staging
+        package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp'
        
   Dependency_Check:
     runs-on: ubuntu-latest
