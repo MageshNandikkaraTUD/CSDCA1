@@ -5,8 +5,7 @@ on:
 #   branches: [ master ]
 jobs:
   Build_Unit_Test:                                            
-    runs-on: ubuntu-latest
-    name: CI Build      
+    runs-on: ubuntu-latest    
 
     steps:
     - name: Checkout  
@@ -49,7 +48,7 @@ jobs:
   
   deploy_test_blue_green:                                             
     name: Deploy to staging slot, run E2E tests, swap slots
-    needs: Build_Unit_Test
+    needs: [Build_Unit_Test, Dependency_Check, Static_Code_Analysis]
     environment:
       name: Staging
       url: https://mn-bpcalculator-staging.azurewebsites.net/                                 
