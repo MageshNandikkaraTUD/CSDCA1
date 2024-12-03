@@ -71,7 +71,19 @@ jobs:
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE  }}     # Define secret variable in environment
         slot-name: staging
         package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp'
+    
+    # Performance Testing 
+    - name: Pull Docker image for k6
+      run: docker pull grafana/k6
 
+    - name: Run k6 load test, capture report
+      run: docker run -i grafana/k6 run - <k6tests/perf1.js > k6report.txt
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: k6report
+        path: k6report.txt
+        
   ZAP_Baseline_Scan:
     needs: Deploy_To_Staging
     runs-on: ubuntu-latest
