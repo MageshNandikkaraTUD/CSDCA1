@@ -71,6 +71,16 @@ jobs:
         slot-name: staging
         package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp'
 
+    # Run Selenium tests
+    - name: Run Selenium tests
+      run: dotnet test ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp/SeleniumTest.dll /Settings:SeleniumTest.runsettings --logger:"trx;LogFileName=selenium.trx"
+
+    # Upload results of selenium tests
+    - uses: actions/upload-artifact@v4
+      with:
+        name: Selenium Tests Results
+        path: TestResults/selenium.trx
+
   K6_Perf_Test:
     needs: Deploy_To_Staging
     runs-on: ubuntu-latest

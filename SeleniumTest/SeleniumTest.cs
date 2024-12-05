@@ -44,9 +44,9 @@ namespace SeleniumTest
         public void Setup()
         {
             // read URL from SeleniumTest.runsettings (configure run settings)
-            this.webAppUri = testContextInstance.Properties["webAppUri"].ToString();
+            //this.webAppUri = testContextInstance.Properties["webAppUri"].ToString();
             
-            //this.webAppUri = "https://gc-bmicalculator-ga-staging.azurewebsites.net";
+            this.webAppUri = "https://mn-bpcalculator-staging.azurewebsites.net";
         }
 
         [TestMethod]
@@ -68,36 +68,26 @@ namespace SeleniumTest
                 driver.Navigate().GoToUrl(webAppUri);
 
                 // get weight in stone element
-                IWebElement weightInStoneElement = driver.FindElement(By.Id("Bmi_WeightStones"));
+                IWebElement weightInStoneElement = driver.FindElement(By.Id("BP_Systolic"));
                 // enter 10 in element
-                weightInStoneElement.SendKeys("10");
+                weightInStoneElement.SendKeys("100");
 
                 // get weight in stone element
-                IWebElement weightInPoundsElement = driver.FindElement(By.Id("Bmi_WeightPounds"));
+                IWebElement weightInPoundsElement = driver.FindElement(By.Id("BP_Diastolic"));
                 // enter 10 in element
-                weightInPoundsElement.SendKeys("10");
-
-                // get weight in stone element
-                IWebElement heightFeetElement = driver.FindElement(By.Id("Bmi_HeightFeet"));
-                // enter 10 in element
-                heightFeetElement.SendKeys("5");
-
-                // get weight in stone element
-                IWebElement heightInchesElement = driver.FindElement(By.Id("Bmi_HeightInches"));
-                // enter 10 in element
-                heightInchesElement.SendKeys("5");
+                weightInPoundsElement.SendKeys("60");
 
                 // submit the form
-                driver.FindElement(By.Id("convertForm")).Submit();
+                driver.FindElement(By.CssSelector(".btn")).Submit();
 
-                // explictly wait for result with "BMIValue" item
-                IWebElement BMIValueElement = new WebDriverWait(driver, TimeSpan.FromSeconds(10))
-                    .Until(c => c.FindElement(By.Id("bmiVal")));
+                // explictly wait for result with "BPCategory" item
+                IWebElement BPCategoryElement = new WebDriverWait(driver, TimeSpan.FromSeconds(10))
+                    .Until(c => c.FindElement(By.CssSelector("#form1 > div:nth-child(4) > input")));
 
                 // item comes back like "BMIValue: 24.96"
-                String bmi = BMIValueElement.Text.ToString();
+                String bpcategory = BPCategoryElement.GetAttribute("value");
 
-                StringAssert.EndsWith(bmi, "24.96");
+                StringAssert.EndsWith(bpcategory, "Ideal");
 
                 driver.Quit();
 
