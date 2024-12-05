@@ -88,7 +88,7 @@ namespace SeleniumTest
                 // item comes back like "BMIValue: 24.96"
                 String bpcategory = BPCategoryElement.GetAttribute("value");
 
-                StringAssert.EndsWith(bpcategory, "Ideal");
+                StringAssert.EndsWith(bpcategory, "Ideal Blood Pressure");
 
                 driver.Quit();
 
