@@ -15,4 +15,8 @@
     <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="117.0.5938.8800" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BPCalculator\BPCalculator.csproj" />
+  </ItemGroup>
+
 </Project>

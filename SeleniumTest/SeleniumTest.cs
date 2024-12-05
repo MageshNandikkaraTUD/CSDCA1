@@ -80,10 +80,11 @@ namespace SeleniumTest
                 // submit the form
                 driver.FindElement(By.CssSelector(".btn")).Submit();
 
+
                 // explictly wait for result with "BPCategory" item
                 IWebElement BPCategoryElement = new WebDriverWait(driver, TimeSpan.FromSeconds(10))
-                    .Until(c => c.FindElement(By.CssSelector("#form1 > div:nth-child(4) > input")));
-
+                    .Until(c => c.FindElement(By.CssSelector("div.form-group:nth-child(4)")));
+                
                 // item comes back like "BMIValue: 24.96"
                 String bpcategory = BPCategoryElement.GetAttribute("value");
 
