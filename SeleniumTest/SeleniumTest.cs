@@ -50,7 +50,7 @@ namespace SeleniumTest
         }
 
         [TestMethod]
-        public void TestBMIUI()
+        public void TestBPUI()
         {
 
             String chromeDriverPath = Environment.GetEnvironmentVariable("ChromeWebDriver");
@@ -85,7 +85,7 @@ namespace SeleniumTest
                 IWebElement BPCategoryElement = new WebDriverWait(driver, TimeSpan.FromSeconds(10))
                     .Until(c => c.FindElement(By.CssSelector("div.form-group:nth-child(4)")));
                 
-                // item comes back like "BMIValue: 24.96"
+                // BPCategory "Ideal Blood Pressure"
                 String bpcategory = BPCategoryElement.Text.ToString();
 
                 //Assert

@@ -81,6 +81,15 @@ jobs:
         name: Selenium Tests Results
         path: TestResults/selenium.trx
 
+    # Publish selenium test results
+    - uses: dorny/test-reporter@v1
+      with:
+          artifact: Selenium Tests
+          name: Selenium Tests                  
+          path: TestResults/selenium.trx
+          reporter: 'dotnet-trx'
+
+
   K6_Perf_Test:
     needs: Deploy_To_Staging
     runs-on: ubuntu-latest
