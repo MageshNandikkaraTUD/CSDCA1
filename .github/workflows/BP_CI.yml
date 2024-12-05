@@ -84,7 +84,7 @@ jobs:
     # Publish selenium test results
     - uses: dorny/test-reporter@v1
       with:
-          artifact: Selenium Tests
+          artifact: ''
           name: Selenium Tests                  
           path: TestResults/selenium.trx
           reporter: 'dotnet-trx'
