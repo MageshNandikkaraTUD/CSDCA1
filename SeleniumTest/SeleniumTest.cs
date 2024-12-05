@@ -86,8 +86,9 @@ namespace SeleniumTest
                     .Until(c => c.FindElement(By.CssSelector("div.form-group:nth-child(4)")));
                 
                 // item comes back like "BMIValue: 24.96"
-                String bpcategory = BPCategoryElement.GetAttribute("value");
+                String bpcategory = BPCategoryElement.Text.ToString();
 
+                //Assert
                 StringAssert.EndsWith(bpcategory, "Ideal Blood Pressure");
 
                 driver.Quit();
