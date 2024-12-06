@@ -88,7 +88,22 @@ jobs:
           name: Selenium Tests                  
           path: TestResults/selenium.trx
           reporter: 'dotnet-trx'
+          
+  Blue_Green:
+    needs: [K6_Perf_Test, ZAP_Baseline_Scan]
+    runs-on: windows-latest
+    steps:
+    # login to Azure account
+    - uses: azure/login@v2
+      with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_2FD6509648E24926846819AC0F200D9F }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_E769A7FE23B84CD78011993A52A69DCF }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_3C8FEBAA39934B86B584A954975DDA06 }}
 
+    # blue/green
+    - name: swap staging and production slots
+      run: |
+        az webapp deployment slot swap -n mn-bpcalculator -g csdca1bpcalc --slot staging --target-slot production
 
   K6_Perf_Test:
     needs: Deploy_To_Staging
