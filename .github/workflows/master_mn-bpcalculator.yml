@@ -91,6 +91,8 @@ jobs:
           
   Blue_Green:
     needs: [K6_Perf_Test, ZAP_Baseline_Scan]
+    environment:
+      name: 'Production'
     permissions:
       id-token: write
     runs-on: windows-latest
