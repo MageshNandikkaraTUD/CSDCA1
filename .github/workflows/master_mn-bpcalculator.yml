@@ -1,65 +1,181 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
-name: Build and deploy ASP.Net Core app to Azure Web App - mn-bpcalculator
-
+name: BP_CI                                       
 on:
-  push:
-    branches:
-      - master
-  workflow_dispatch:
-
+ workflow_dispatch:        
+# push:                                            
+#   branches: [ master ]
 jobs:
-  build:
-    runs-on: windows-latest
+  Build_Unit_Test:                                            
+    runs-on: ubuntu-latest    
 
     steps:
-      - uses: actions/checkout@v4
+    - name: Checkout  
+      uses: actions/checkout@v4
 
-      - name: Set up .NET Core
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.x'
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
+    - name: Restore dependencies
+      run: dotnet restore
 
-      - name: dotnet publish
-        run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+    - name: Build for Release
+      run: dotnet build --configuration Release --no-restore
 
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4
-        with:
-          name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+    - name: Run unit tests
+      run: dotnet test BPUnitTestProject/BPUnitTestProject.csproj --configuration Release --no-build --settings tests.runsettings --collect "Code coverage" -l:trx
 
-  deploy:
-    runs-on: windows-latest
-    needs: build
+    - name: Publish Unit Test Results
+      uses: dorny/test-reporter@v1
+      with:
+        artifact: ''
+        name: MS Tests                  
+        path: '**.trx'
+        reporter: 'dotnet-trx'
+
+    - name: ReportGenerator
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.4.1
+      with:
+        reports: '**/TestResults/**/coverage.cobertura.xml'
+        targetdir: coveragereport
+        classfilters: -BPCalculator.Pages.BloodPressureModel;-BPCalculator.Pages.ErrorModel;-BPCalculator.Pages.Pages__ViewStart;-BPCalculator.Pages.Pages_Error;-BPCalculator.Pages.Pages_Index;-BPCalculator.Pages.Pages_Privacy;-BPCalculator.Pages.PrivacyModel;-BPCalculator.Program;-BPCalculator.Startup
+
+    - name: Upload Coverage Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: Coverage report
+        path: ${{github.workspace}}/coveragereport
+  
+  Deploy_To_Staging:                                             
+    needs: [Build_Unit_Test, Dependency_Check, Static_Code_Analysis]
     environment:
-      name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    permissions:
-      id-token: write #This is required for requesting the JWT
-
+      name: Staging
+      url: https://mn-bpcalculator-staging.azurewebsites.net/                                 
+    runs-on: windows-latest
+    env:
+      AZURE_WEBAPP_NAME: mn-bpcalculator               # set this to your application's name
+      AZURE_WEBAPP_PACKAGE_PATH: 'publish'              # set this to the path to your web app project
     steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: .net-app
-      
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
+    - uses: actions/checkout@v4
+
+    # publish web app ready for deployment
+    - name: Publish web app
+      run: dotnet publish -c Release -o ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp
+    
+    # Deploy to Azure app service to staging slot using publish profile for staging slot
+    - name: Run Azure webapp deploy action using publish profile credentials
+      uses: azure/webapps-deploy@v2
+      with: 
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}                            
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE  }}     # Define secret variable in environment
+        slot-name: staging
+        package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp'
+
+    # Run Selenium tests
+    - name: Run Selenium tests
+      run: dotnet test ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp/SeleniumTest.dll /Settings:SeleniumTest.runsettings --logger:"trx;LogFileName=selenium.trx"
+
+    # Upload results of selenium tests
+    - uses: actions/upload-artifact@v4
+      with:
+        name: Selenium Tests Results
+        path: TestResults/selenium.trx
+
+    # Publish selenium test results
+    - uses: dorny/test-reporter@v1
+      with:
+          artifact: ''
+          name: Selenium Tests                  
+          path: TestResults/selenium.trx
+          reporter: 'dotnet-trx'
+          
+  Blue_Green:
+    needs: [K6_Perf_Test, ZAP_Baseline_Scan]
+    permissions:
+      id-token: write
+    runs-on: windows-latest
+    steps:
+    # login to Azure account
+    - uses: azure/login@v2
+      with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_CD0B0562428E45589F26B62094F31B03 }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_64D44D2FF6C3462287E6849F4CDEFB49 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_1EAF223AC02E4D9CA81C05D965AFAD74 }}
 
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v3
+    # blue/green
+    - name: swap staging and production slots
+      run: |
+        az webapp deployment slot swap -n mn-bpcalculator -g csdca1bpcalc --slot staging --target-slot production
+
+  K6_Perf_Test:
+    needs: Deploy_To_Staging
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Pull Docker image for k6
+      run: docker pull grafana/k6
+
+    - name: Run k6 load test, capture report
+      run: docker run -i grafana/k6 run - <K6Tests/perf1.js > k6report.txt
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: k6report
+        path: k6report.txt
+        
+  ZAP_Baseline_Scan:
+    needs: Deploy_To_Staging
+    runs-on: ubuntu-latest
+    env:
+      URI: https://mn-bpcalculator-staging.azurewebsites.net/
+    steps:
+    - name: Pull Docker image for ZAP
+      run: docker pull zaproxy/zap-weekly
+
+    - name: Run baseline scan
+      run: docker run -v /report:/zap/wrk/:rw --user root -t zaproxy/zap-weekly zap-baseline.py -t ${{env.URI}} -I -r zapreport.html
+  
+    - uses: actions/upload-artifact@v4
+      name: upload ZAP report
+      with:
+        name: ZAPreport
+        path: /report/zapreport.html      
+       
+  Dependency_Check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Depcheck
+        uses: dependency-check/Dependency-Check_Action@main
+        id: Depcheck
         with:
-          app-name: 'mn-bpcalculator'
-          slot-name: 'Production'
-          package: .
-          
+          project: 'BPCalculator'
+          path: '.'
+          format: 'HTML'    
+          args: >
+            --failOnCVSS 8            
+          # fail if CVSS score is High >=8          
+      - name: Upload Test results
+        uses: actions/upload-artifact@v4
+        with:
+           name: Depcheck report
+           path: ${{github.workspace}}/reports
+
+  Static_Code_Analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
+        with:
+          projectBaseDir: .
+          args: >
+            -Dsonar.organization=mnandikkara
+            -Dsonar.projectKey=mnandikkara_bpcalculator
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
