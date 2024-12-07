@@ -98,9 +98,9 @@ jobs:
     # login to Azure account
     - uses: azure/login@v2
       with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_2FD6509648E24926846819AC0F200D9F }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_E769A7FE23B84CD78011993A52A69DCF }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_3C8FEBAA39934B86B584A954975DDA06 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_BB0229D352B54C5B850A8972DA31A976 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_4AEE264D34D549A3B0507F1E504FDCAC }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_E078ECBD9CC44AEEA54A8D470D223D2E }}
 
     # blue/green
     - name: swap staging and production slots
