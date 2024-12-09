@@ -1,53 +1,11 @@
-name: BP_CI_Final                                       
+name: BP_CD                                       
 on:
  workflow_dispatch:        
 # push:                                            
 #   branches: [ master ]
 jobs:
-  Build_Unit_Test:                                            
-    runs-on: ubuntu-latest    
-
-    steps:
-    - name: Checkout  
-      uses: actions/checkout@v4
-
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-
-    - name: Restore dependencies
-      run: dotnet restore
-
-    - name: Build for Release
-      run: dotnet build --configuration Release --no-restore
-
-    - name: Run unit tests
-      run: dotnet test BPUnitTestProject/BPUnitTestProject.csproj --configuration Release --no-build --settings tests.runsettings --collect "Code coverage" -l:trx
-
-    - name: Publish Unit Test Results
-      uses: dorny/test-reporter@v1
-      with:
-        artifact: ''
-        name: MS Tests                  
-        path: '**.trx'
-        reporter: 'dotnet-trx'
-
-    - name: ReportGenerator
-      uses: danielpalme/ReportGenerator-GitHub-Action@5.4.1
-      with:
-        reports: '**/TestResults/**/coverage.cobertura.xml'
-        targetdir: coveragereport
-        classfilters: -BPCalculator.Pages.BloodPressureModel;-BPCalculator.Pages.ErrorModel;-BPCalculator.Pages.Pages__ViewStart;-BPCalculator.Pages.Pages_Error;-BPCalculator.Pages.Pages_Index;-BPCalculator.Pages.Pages_Privacy;-BPCalculator.Pages.PrivacyModel;-BPCalculator.Program;-BPCalculator.Startup
-
-    - name: Upload Coverage Report
-      uses: actions/upload-artifact@v4
-      with:
-        name: Coverage report
-        path: ${{github.workspace}}/coveragereport
   
   Deploy_To_Staging:                                             
-    needs: [Build_Unit_Test, Dependency_Check, Static_Code_Analysis]
     environment:
       name: Staging
       url: https://mn-bpcalculator-staging.azurewebsites.net/                                 
@@ -142,41 +100,5 @@ jobs:
       with:
         name: ZAPreport
         path: /report/zapreport.html      
-       
-  Dependency_Check:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Depcheck
-        uses: dependency-check/Dependency-Check_Action@main
-        id: Depcheck
-        with:
-          project: 'BPCalculator'
-          path: '.'
-          format: 'HTML'    
-          args: >
-            --failOnCVSS 8            
-          # fail if CVSS score is High >=8          
-      - name: Upload Test results
-        uses: actions/upload-artifact@v4
-        with:
-           name: Depcheck report
-           path: ${{github.workspace}}/reports
-
-  Static_Code_Analysis:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  
-      - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@master
-        with:
-          projectBaseDir: .
-          args: >
-            -Dsonar.organization=mnandikkara
-            -Dsonar.projectKey=mnandikkara_bpcalculator
-        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
