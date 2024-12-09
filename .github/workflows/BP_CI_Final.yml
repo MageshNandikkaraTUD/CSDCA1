@@ -93,6 +93,7 @@ jobs:
     needs: [K6_Perf_Test, ZAP_Baseline_Scan]
     environment:
       name: 'Production'
+      url: https://mn-bpcalculator.azurewebsites.net/
     permissions:
       id-token: write
     runs-on: windows-latest
@@ -100,9 +101,7 @@ jobs:
     # login to Azure account
     - uses: azure/login@v2
       with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_CD0B0562428E45589F26B62094F31B03 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_64D44D2FF6C3462287E6849F4CDEFB49 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_1EAF223AC02E4D9CA81C05D965AFAD74 }}
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     # blue/green
     - name: swap staging and production slots
