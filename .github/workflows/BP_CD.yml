@@ -54,7 +54,6 @@ jobs:
     permissions:
       id-token: write
     runs-on: windows-latest
-    if: false
     steps:
     # login to Azure account
     - uses: azure/login@v2
@@ -69,7 +68,6 @@ jobs:
   K6_Perf_Test:
     needs: Deploy_To_Staging
     runs-on: ubuntu-latest
-    if: false
     steps:
     - uses: actions/checkout@v4
 
@@ -87,7 +85,6 @@ jobs:
   ZAP_Baseline_Scan:
     needs: Deploy_To_Staging
     runs-on: ubuntu-latest
-    if: false
     env:
       URI: https://mn-bpcalculator-staging.azurewebsites.net/
     steps:
