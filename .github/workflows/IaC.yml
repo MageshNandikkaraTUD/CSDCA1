@@ -19,5 +19,5 @@ jobs:
       - name: Deploy ARM Template
         uses: azure/arm-deploy@v1
         with:
-          scope: "/subscriptions/${{ secrets.SUBSCRIPTIONID }}/resourceGroups/CSDCA1BPCALC"
+          scope: resourcegroup
           template: ./template.json
