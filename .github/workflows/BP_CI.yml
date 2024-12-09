@@ -93,7 +93,6 @@ jobs:
   IAC:
     needs: Static_Code_Analysis
     runs-on: ubuntu-latest
-    if: false
 
     steps:
       - name: Checkout code
