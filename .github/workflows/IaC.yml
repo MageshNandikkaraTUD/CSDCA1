@@ -19,5 +19,5 @@ jobs:
       - name: Deploy ARM Template
         uses: azure/arm-deploy@v1
         with:
-          scope: resourcegroup
+          resourceGroupName: CSDCA1BPCALC
           template: ./template.json
