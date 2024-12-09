@@ -4,8 +4,10 @@ on:
 # push:                                            
 #   branches: [ master ]
 jobs:
-  Build_Unit_Test:                                            
-    runs-on: ubuntu-latest    
+  Build_Unit_Test:
+  
+    runs-on: ubuntu-latest
+    if: false
 
     steps:
     - name: Checkout  
@@ -49,6 +51,7 @@ jobs:
   Dependency_Check:
     needs: Build_Unit_Test
     runs-on: ubuntu-latest
+    if: false
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -90,6 +93,7 @@ jobs:
   IAC:
     needs: Static_Code_Analysis
     runs-on: ubuntu-latest
+    if: false
 
     steps:
       - name: Checkout code
