@@ -7,7 +7,6 @@ jobs:
   Build_Unit_Test:
   
     runs-on: ubuntu-latest
-    if: false
 
     steps:
     - name: Checkout  
@@ -51,7 +50,7 @@ jobs:
   Dependency_Check:
     needs: Build_Unit_Test
     runs-on: ubuntu-latest
-    if: false
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
