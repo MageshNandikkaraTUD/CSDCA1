@@ -50,7 +50,7 @@ namespace SeleniumTest
         }
 
         [TestMethod]
-        public void TestBPUI()
+        public void TestIdeal()
         {
 
             String chromeDriverPath = Environment.GetEnvironmentVariable("ChromeWebDriver");
@@ -90,6 +90,54 @@ namespace SeleniumTest
 
                 //Assert
                 StringAssert.EndsWith(bpcategory, "Ideal Blood Pressure");
+
+                driver.Quit();
+
+                // alternative - use Cypress or Playright
+            }
+        }
+
+        [TestMethod]
+        public void TestLow()
+        {
+
+            String chromeDriverPath = Environment.GetEnvironmentVariable("ChromeWebDriver");
+            if (chromeDriverPath is null)
+            {
+                chromeDriverPath = ".";                 // for IDE
+            }
+          
+            using (IWebDriver driver = new ChromeDriver(chromeDriverPath))
+            {
+                // any exception below results in a test fail
+
+                // navigate to URI for temperature converter
+                // web app running on IIS express
+                driver.Navigate().GoToUrl(webAppUri);
+
+                // get weight in stone element
+                IWebElement weightInStoneElement = driver.FindElement(By.Id("BP_Systolic"));
+                // enter 10 in element
+                weightInStoneElement.SendKeys("80");
+
+                // get weight in stone element
+                IWebElement weightInPoundsElement = driver.FindElement(By.Id("BP_Diastolic"));
+                // enter 10 in element
+                weightInPoundsElement.SendKeys("50");
+
+                // submit the form
+                driver.FindElement(By.CssSelector(".btn")).Submit();
+
+
+                // explictly wait for result with "BPCategory" item
+                IWebElement BPCategoryElement = new WebDriverWait(driver, TimeSpan.FromSeconds(10))
+                    .Until(c => c.FindElement(By.CssSelector("div.form-group:nth-child(4)")));
+                
+                // BPCategory "Ideal Blood Pressure"
+                String bpcategory = BPCategoryElement.Text.ToString();
+
+                //Assert
+                StringAssert.EndsWith(bpcategory, "Low Blood Pressure");
 
                 driver.Quit();
 
