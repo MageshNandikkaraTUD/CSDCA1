@@ -3,8 +3,7 @@ on:
  workflow_dispatch:        
 # push:                                            
 #   branches: [ master ]
-jobs:
-  
+jobs:  
   Deploy_To_Staging:                                             
     environment:
       name: Staging
